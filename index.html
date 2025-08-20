@@ -5,17 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ponto Eletrônico</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Didot&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(to bottom, #d1d5db, #e5e7eb); }
-        .card { background: #ffffff; border-radius: 16px; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); }
-        .btn { transition: all 0.3s ease; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-        .btn:active { transform: translateY(1px); }
-        .input-field { border: 2px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; }
-        .clock-display { font-family: monospace; font-size: 2.5rem; letter-spacing: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+        body { font-family: 'Didot', serif; background: linear-gradient(to bottom, #d1d5db, #e5e7eb); color: #1f2937; }
+        .card { 
+            background: rgba(255, 255, 255, 0.5); 
+            backdrop-filter: blur(10px);
+            border-radius: 16px; 
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); 
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn { transition: all 0.3s ease; font-weight: 700; padding: 0.75rem; border-radius: 0.5rem; }
+        .btn.primary { background-color: #374151; color: #fff; }
+        .btn.primary:hover { background-color: #1f2937; transform: translateY(-2px); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .btn.primary:disabled { background-color: rgba(229, 231, 235, 0.8); color: #9ca3af; cursor: not-allowed; }
+        .btn.accent { background-color: #d4ac00; color: white; }
+        .btn.accent:hover { background-color: #a48200; }
+        .btn.secondary { background-color: #e5e7eb; color: #6b7280; }
+        .btn.secondary:hover { background-color: #d1d5db; }
+        .input-field { border: 1px solid #d1d5db; border-radius: 8px; padding: 12px 16px; background-color: rgba(249, 250, 251, 0.8); }
+        .clock-display { font-size: 3rem; letter-spacing: 2px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
         .notification-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center; }
-        .notification-content { background-color: #fff; margin: auto; padding: 24px; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; max-width: 90%; width: 400px; }
+        .notification-content { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); margin: auto; padding: 24px; border-radius: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); text-align: center; max-width: 90%; width: 400px; }
         .transition-opacity-transform { transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; }
         .report-scroll-container { max-height: 400px; overflow-y: auto; }
     </style>
@@ -24,43 +37,40 @@
 
     <div id="pontoSection" class="card w-full max-w-md p-8 transition-opacity-transform">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Ponto Eletrônico</h1>
-        <div class="text-center text-gray-600 mb-6">Seja bem-vindo(a)</div>
+        <div class="text-center text-gray-600 mb-6 text-sm uppercase">Bem-vindo</div>
 
         <div class="text-center mb-6">
-            <div id="relogio" class="clock-display text-gray-800">00:00:00</div>
+            <div id="relogio" class="clock-display text-gray-800 font-bold">00:00:00</div>
         </div>
 
         <div id="mainAppSection">
             <div class="mb-6">
-                <label for="employeeName" class="block text-gray-700 text-sm font-semibold mb-2">Seu Nome:</label>
-                <input type="text" id="employeeName" placeholder="Digite seu nome completo"
-                       class="input-field w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                <label for="employeeName" class="block text-gray-700 text-xs font-semibold uppercase mb-2">Seu Nome:</label>
+                <input type="text" id="employeeName" placeholder="Digite seu nome completo para iniciar"
+                       class="input-field w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 transition duration-200">
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <button id="startButton" class="btn bg-green-600 text-white font-bold py-3 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-                    Iniciar Expediente
-                </button>
-                <button id="lunchStartButton" disabled class="btn bg-yellow-500 text-white font-bold py-3 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                <button id="lunchStartButton" disabled class="btn primary disabled:opacity-50 disabled:cursor-not-allowed">
                     Iniciar Almoço
                 </button>
-                <button id="lunchEndButton" disabled class="btn bg-yellow-600 text-white font-bold py-3 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                <button id="lunchEndButton" disabled class="btn primary disabled:opacity-50 disabled:cursor-not-allowed">
                     Fim Almoço
                 </button>
-                <button id="snackStartButton" disabled class="btn bg-blue-500 text-white font-bold py-3 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                <button id="snackStartButton" disabled class="btn primary disabled:opacity-50 disabled:cursor-not-allowed">
                     Iniciar Lanche
                 </button>
-                <button id="snackEndButton" disabled class="btn bg-blue-600 text-white font-bold py-3 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                <button id="snackEndButton" disabled class="btn primary disabled:opacity-50 disabled:cursor-not-allowed">
                     Fim Lanche
                 </button>
-                <button id="endButton" disabled class="btn bg-red-600 text-white font-bold py-3 rounded-lg shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                <button id="endButton" disabled class="btn primary w-full col-span-2 disabled:opacity-50 disabled:cursor-not-allowed">
                     Finalizar Expediente
                 </button>
             </div>
 
-            <div class="bg-gray-100 p-6 rounded-xl shadow-inner mb-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-3">Status do Dia</h2>
-                <div class="space-y-2 text-gray-700">
+            <div class="card p-6 rounded-xl shadow-inner mb-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-3">Status do Dia</h2>
+                <div class="space-y-2 text-gray-700 text-sm">
                     <p><strong>Início Expediente:</strong> <span id="workStartTimeDisplay">--:--</span></p>
                     <p><strong>Início Almoço:</strong> <span id="lunchStartTimeDisplay">--:--</span></p>
                     <p><strong>Fim Almoço:</strong> <span id="lunchEndTimeDisplay">--:--</span></p>
@@ -70,16 +80,16 @@
                     <p><strong>Duração Almoço:</strong> <span id="lunchDurationDisplay">--:--</span></p>
                     <p><strong>Duração Lanche:</strong> <span id="snackDurationDisplay">--:--</span></p>
                     <p><strong>Total Trabalhado:</strong> <span id="totalWorkTimeDisplay">--:--</span></p>
-                    <p><strong>Status Atual:</strong> <span id="statusDisplay" class="font-medium text-blue-600">Aguardando Início</span></p>
+                    <p><strong>Status Atual:</strong> <span id="statusDisplay" class="font-medium text-gray-600">Aguardando Início</span></p>
                 </div>
             </div>
 
-            <button id="resetButton" class="btn w-full mt-4 bg-gray-400 text-white font-bold py-3 rounded-lg shadow-md">
+            <button id="resetButton" class="btn secondary w-full mt-4">
                 Resetar Dia
             </button>
         </div>
         
-        <button id="showAdminButton" class="btn w-full mt-8 text-sm text-gray-600 hover:text-gray-800 transition">
+        <button id="showAdminButton" class="btn secondary w-full mt-8 text-sm">
             Acesso Administrativo
         </button>
     </div>
@@ -87,15 +97,15 @@
     <div id="loginSection" class="card w-full max-w-md p-8 absolute opacity-0 scale-95 hidden transition-opacity-transform">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Acesso Administrativo</h1>
         <div class="mb-4">
-            <label for="passwordInput" class="block text-gray-700 text-sm font-semibold mb-2">Senha:</label>
+            <label for="passwordInput" class="block text-gray-700 text-xs font-semibold uppercase mb-2">Senha:</label>
             <input type="password" id="passwordInput" placeholder="Digite a senha"
-                   class="input-field w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                   class="input-field w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 transition duration-200">
         </div>
-        <button id="loginButton" class="btn w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow-md">
+        <button id="loginButton" class="btn primary w-full">
             Entrar
         </button>
         <p id="loginMessage" class="text-red-500 text-center mt-4 hidden"></p>
-        <button id="backToPontoButton" class="btn w-full mt-8 text-sm text-gray-600 hover:text-gray-800 transition">
+        <button id="backToPontoButton" class="btn secondary w-full mt-8 text-sm">
             Voltar ao Ponto
         </button>
     </div>
@@ -107,20 +117,19 @@
             <h2 id="reportDate" class="text-xl font-semibold text-gray-800"></h2>
             <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
                 <input type="date" id="dateFilter" class="input-field w-full sm:w-auto">
-                <button id="filterButton" class="btn w-full sm:w-auto bg-gray-500 text-white font-bold py-2 px-4 rounded-lg">Filtrar</button>
-                <button id="exportButton" class="btn w-full sm:w-auto bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Exportar CSV</button>
+                <button id="filterButton" class="btn secondary w-full sm:w-auto">Filtrar</button>
+                <button id="exportButton" class="btn accent w-full sm:w-auto">Exportar CSV</button>
             </div>
         </div>
 
         <div id="reportContainer" class="report-scroll-container space-y-4 mb-6">
-            </div>
+        </div>
 
-        <button id="toggleBankButton" class="btn w-full mt-4 bg-gray-500 text-white font-bold py-3 rounded-lg shadow-md">
+        <button id="toggleBankButton" class="btn secondary w-full mt-4">
             Ver Banco de Horas
         </button>
 
         <div id="bankContainer" class="hidden space-y-4">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Banco de Horas do Mês</h2>
             <div class="mb-6 flex items-center gap-4">
                 <label for="monthFilter" class="block text-gray-700 font-semibold">Mês/Ano:</label>
                 <input type="month" id="monthFilter" class="input-field w-full sm:w-auto">
@@ -130,7 +139,7 @@
         <div id="bankReportContainer" class="hidden space-y-4">
         </div>
 
-        <button id="logoutButton" class="btn w-full mt-8 bg-red-600 text-white font-bold py-3 rounded-lg shadow-md">
+        <button id="logoutButton" class="btn secondary w-full mt-8">
             Sair
         </button>
     </div>
@@ -139,478 +148,496 @@
         <div class="notification-content">
             <span class="close-button" id="closeNotificationButton">&times;</span>
             <p id="notificationMessage" class="text-lg font-semibold text-gray-800"></p>
-            <button id="notificationOkButton" class="mt-4 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">OK</button>
+            <button id="notificationOkButton" class="mt-4 btn primary">OK</button>
         </div>
     </div>
     
     <script>
-        const CORRECT_PASSWORD = '2178';
-        const pontoSection = document.getElementById('pontoSection');
-        const loginSection = document.getElementById('loginSection');
-        const adminSection = document.getElementById('adminSection');
-        const showAdminButton = document.getElementById('showAdminButton');
-        const backToPontoButton = document.getElementById('backToPontoButton');
-        const logoutButton = document.getElementById('logoutButton');
-        const passwordInput = document.getElementById('passwordInput');
-        const loginButton = document.getElementById('loginButton');
-        const loginMessage = document.getElementById('loginMessage');
-        const reportContainer = document.getElementById('reportContainer');
-        const toggleBankButton = document.getElementById('toggleBankButton');
-        const bankContainer = document.getElementById('bankContainer');
-        const bankReportContainer = document.getElementById('bankReportContainer');
-        const dateFilter = document.getElementById('dateFilter');
-        const monthFilter = document.getElementById('monthFilter');
-        const filterButton = document.getElementById('filterButton');
-        const exportButton = document.getElementById('exportButton');
-        const reportDate = document.getElementById('reportDate');
-        
-        // Funções para gerenciar as seções
-        function showPonto() {
-            loginSection.classList.add('hidden', 'opacity-0', 'scale-95');
-            adminSection.classList.add('hidden', 'opacity-0', 'scale-95');
-            pontoSection.classList.remove('hidden');
-            setTimeout(() => {
-                pontoSection.classList.add('opacity-100', 'scale-100');
-            }, 10);
-        }
-
-        function showLogin() {
-            pontoSection.classList.add('hidden', 'opacity-0', 'scale-95');
-            loginSection.classList.remove('hidden');
-            setTimeout(() => {
-                loginSection.classList.add('opacity-100', 'scale-100');
-            }, 10);
-        }
-
-        function showAdmin() {
-            loginSection.classList.add('hidden', 'opacity-0', 'scale-95');
-            adminSection.classList.remove('hidden');
-            setTimeout(() => {
-                adminSection.classList.add('opacity-100', 'scale-100');
-            }, 10);
-        }
-
-        // Funções para o Ponto Eletrônico
-        let employeeName = '';
-        let workStartTime = null;
-        let lunchStartTime = null;
-        let lunchEndTime = null;
-        let snackStartTime = null;
-        let snackEndTime = null;
-        let workEndTime = null;
-        const ONE_HOUR_IN_MS = 60 * 60 * 1000;
-        const TEN_MINUTES_IN_MS = 10 * 60 * 1000;
-        const employeeNameInput = document.getElementById('employeeName');
-        const startButton = document.getElementById('startButton');
-        const lunchStartButton = document.getElementById('lunchStartButton');
-        const lunchEndButton = document.getElementById('lunchEndButton');
-        const snackStartButton = document.getElementById('snackStartButton');
-        const snackEndButton = document.getElementById('snackEndButton');
-        const endButton = document.getElementById('endButton');
-        const resetButton = document.getElementById('resetButton');
-        const workStartTimeDisplay = document.getElementById('workStartTimeDisplay');
-        const lunchStartTimeDisplay = document.getElementById('lunchStartTimeDisplay');
-        const lunchEndTimeDisplay = document.getElementById('lunchEndTimeDisplay');
-        const snackStartTimeDisplay = document.getElementById('snackStartTimeDisplay');
-        const snackEndTimeDisplay = document.getElementById('snackEndTimeDisplay');
-        const workEndTimeDisplay = document.getElementById('workEndTimeDisplay');
-        const lunchDurationDisplay = document.getElementById('lunchDurationDisplay');
-        const snackDurationDisplay = document.getElementById('snackDurationDisplay');
-        const totalWorkTimeDisplay = document.getElementById('totalWorkTimeDisplay');
-        const statusDisplay = document.getElementById('statusDisplay');
-        const relogioDisplay = document.getElementById('relogio');
-        const notificationModal = document.getElementById('notificationModal');
-        const notificationMessage = document.getElementById('notificationMessage');
-        const closeNotificationButton = document.getElementById('closeNotificationButton');
-        const notificationOkButton = document.getElementById('notificationOkButton');
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadData();
-            setInterval(updateRelogio, 1000);
-            showPonto();
-        });
-
-        function updateRelogio() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            relogioDisplay.textContent = `${hours}:${minutes}:${seconds}`;
-        }
-
-        function formatTime(date) {
-            if (!date) return '--:--';
-            const d = new Date(date);
-            const hours = String(d.getHours()).padStart(2, '0');
-            const minutes = String(d.getMinutes()).padStart(2, '0');
-            return `${hours}:${minutes}`;
-        }
-        
-        function formatTotalHours(totalMinutes) {
-            const hours = Math.floor(totalMinutes / 60);
-            const minutes = totalMinutes % 60;
-            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-        }
-
-        function calculateDuration(start, end) {
-            if (!start || !end) return 0;
-            const diffMs = new Date(end).getTime() - new Date(start).getTime();
-            if (diffMs < 0) return 0;
-            const totalMinutes = Math.floor(diffMs / (1000 * 60));
-            return totalMinutes;
-        }
-
-        function showNotification(message) {
-            notificationMessage.textContent = message;
-            notificationModal.style.display = 'flex';
-        }
-
-        function hideNotification() {
-            notificationModal.style.display = 'none';
-        }
-
-        function performReset() {
-            employeeName = '';
-            workStartTime = null;
-            lunchStartTime = null;
-            lunchEndTime = null;
-            snackStartTime = null;
-            snackEndTime = null;
-            workEndTime = null;
-            localStorage.removeItem('employeeTimeData');
-            updateUI();
-            employeeNameInput.value = '';
-            employeeNameInput.focus();
-        }
-
-        function startWork() {
-            if (!employeeNameInput.value.trim()) { showNotification('Por favor, digite seu nome antes de iniciar o expediente.'); return; }
-            employeeName = employeeNameInput.value.trim();
-            workStartTime = new Date();
-            statusDisplay.textContent = 'Expediente Iniciado';
-            statusDisplay.classList.remove('text-blue-600');
-            statusDisplay.classList.add('text-green-600');
-            updateUI();
-            saveData();
-        }
-
-        function startLunch() {
-            lunchStartTime = new Date();
-            statusDisplay.textContent = 'Em Almoço';
-            statusDisplay.classList.remove('text-green-600', 'text-red-600');
-            statusDisplay.classList.add('text-yellow-600');
-            updateUI();
-            saveData();
-        }
-
-        function endLunch() {
-            lunchEndTime = new Date();
-            if (lunchStartTime && lunchEndTime) {
-                const lunchDurationMs = new Date(lunchEndTime).getTime() - new Date(lunchStartTime).getTime();
-                if (lunchDurationMs > ONE_HOUR_IN_MS) {
-                    showNotification('Você se atrasou no almoço!');
-                    statusDisplay.textContent = 'Retornou do Almoço (Atrasado)';
-                    statusDisplay.classList.remove('text-yellow-600', 'text-green-600');
-                    statusDisplay.classList.add('text-red-600');
-                } else {
-                    statusDisplay.textContent = 'Retornou do Almoço';
-                    statusDisplay.classList.remove('text-yellow-600', 'text-red-600');
-                    statusDisplay.classList.add('text-green-600');
-                }
-            } else {
-                statusDisplay.textContent = 'Retornou do Almoço';
-                statusDisplay.classList.remove('text-yellow-600', 'text-red-600');
-                statusDisplay.classList.add('text-green-600');
-            }
-            updateUI();
-            saveData();
-        }
-
-        function startSnack() {
-            snackStartTime = new Date();
-            statusDisplay.textContent = 'Em Lanche';
-            statusDisplay.classList.remove('text-green-600', 'text-red-600');
-            statusDisplay.classList.add('text-blue-600');
-            updateUI();
-            saveData();
-        }
-
-        function endSnack() {
-            snackEndTime = new Date();
-            if (snackStartTime && snackEndTime) {
-                const snackDurationMs = new Date(snackEndTime).getTime() - new Date(snackStartTime).getTime();
-                if (snackDurationMs > TEN_MINUTES_IN_MS) {
-                    showNotification('Seu lanche excedeu o tempo máximo de 10 minutos!');
-                    statusDisplay.textContent = 'Retornou do Lanche (Atrasado)';
-                    statusDisplay.classList.remove('text-blue-600');
-                    statusDisplay.classList.add('text-red-600');
-                } else {
-                    statusDisplay.textContent = 'Retornou do Lanche';
-                    statusDisplay.classList.remove('text-blue-600', 'text-red-600');
-                    statusDisplay.classList.add('text-green-600');
-                }
-            } else {
-                statusDisplay.textContent = 'Retornou do Lanche';
-                statusDisplay.classList.remove('text-blue-600', 'text-red-600');
-                statusDisplay.classList.add('text-green-600');
-            }
-            updateUI();
-            saveData();
-        }
-
-        function endWork() {
-            workEndTime = new Date();
-            statusDisplay.textContent = 'Expediente Finalizado';
-            statusDisplay.classList.remove('text-green-600', 'text-yellow-600', 'text-blue-600');
-            statusDisplay.classList.add('text-red-600');
-            updateUI();
-            saveData();
-            showNotification('Ponto finalizado! Você pode resetar o dia para um novo registro.');
-        }
-        
-        function calculateTotalWorkMinutes(data) {
-            let totalWorkMs = 0;
-            if (data.workStartTime && data.workEndTime) {
-                totalWorkMs = new Date(data.workEndTime).getTime() - new Date(data.workStartTime).getTime();
-                if (data.lunchStartTime && data.lunchEndTime) {
-                    const lunchDurationMs = new Date(data.lunchEndTime).getTime() - new Date(data.lunchStartTime).getTime();
-                    totalWorkMs -= lunchDurationMs;
-                }
-                if (data.snackStartTime && data.snackEndTime) {
-                    const snackDurationMs = new Date(data.snackEndTime).getTime() - new Date(data.snackStartTime).getTime();
-                    totalWorkMs -= snackDurationMs;
-                }
-            }
-            return Math.floor(totalWorkMs / (1000 * 60));
-        }
-
-        function updateUI() {
-            employeeNameInput.value = employeeName;
-            workStartTimeDisplay.textContent = formatTime(workStartTime);
-            lunchStartTimeDisplay.textContent = formatTime(lunchStartTime);
-            lunchEndTimeDisplay.textContent = formatTime(lunchEndTime);
-            snackStartTimeDisplay.textContent = formatTime(snackStartTime);
-            snackEndTimeDisplay.textContent = formatTime(snackEndTime);
-            workEndTimeDisplay.textContent = formatTime(workEndTime);
-            lunchDurationDisplay.textContent = formatTotalHours(calculateDuration(lunchStartTime, lunchEndTime));
-            snackDurationDisplay.textContent = formatTotalHours(calculateDuration(snackStartTime, snackEndTime));
-            totalWorkTimeDisplay.textContent = formatTotalHours(calculateTotalWorkMinutes({ workStartTime, lunchStartTime, lunchEndTime, snackStartTime, snackEndTime, workEndTime }));
+        (function() {
+            const CORRECT_PASSWORD = '2178';
+            const pontoSection = document.getElementById('pontoSection');
+            const loginSection = document.getElementById('loginSection');
+            const adminSection = document.getElementById('adminSection');
+            const showAdminButton = document.getElementById('showAdminButton');
+            const backToPontoButton = document.getElementById('backToPontoButton');
+            const logoutButton = document.getElementById('logoutButton');
+            const passwordInput = document.getElementById('passwordInput');
+            const loginButton = document.getElementById('loginButton');
+            const loginMessage = document.getElementById('loginMessage');
+            const reportContainer = document.getElementById('reportContainer');
+            const toggleBankButton = document.getElementById('toggleBankButton');
+            const bankContainer = document.getElementById('bankContainer');
+            const bankReportContainer = document.getElementById('bankReportContainer');
+            const dateFilter = document.getElementById('dateFilter');
+            const monthFilter = document.getElementById('monthFilter');
+            const filterButton = document.getElementById('filterButton');
+            const exportButton = document.getElementById('exportButton');
+            const reportDate = document.getElementById('reportDate');
             
-            startButton.disabled = !!workStartTime;
-            lunchStartButton.disabled = !workStartTime || !!lunchStartTime || !!workEndTime || !!snackStartTime;
-            lunchEndButton.disabled = !lunchStartTime || !!lunchEndTime || !!workEndTime;
-            snackStartButton.disabled = !workStartTime || !!snackStartTime || !!workEndTime;
-            snackEndButton.disabled = !snackStartTime || !!snackEndTime || !!workEndTime;
-            endButton.disabled = !workStartTime || (lunchStartTime && !lunchEndTime) || (snackStartTime && !snackEndTime) || !!workEndTime;
-
-            if (!workStartTime) { 
-                statusDisplay.textContent = 'Aguardando Início'; 
-                statusDisplay.className = 'font-medium text-blue-600'; 
-            } else if (lunchStartTime && !lunchEndTime) {
-                if ((new Date().getTime() - new Date(lunchStartTime).getTime()) > ONE_HOUR_IN_MS) {
-                    statusDisplay.textContent = 'Em Almoço (Atrasado)'; 
-                    statusDisplay.className = 'font-medium text-red-600';
-                } else {
-                    statusDisplay.textContent = 'Em Almoço'; 
-                    statusDisplay.className = 'font-medium text-yellow-600';
-                }
-            } else if (snackStartTime && !snackEndTime) {
-                if ((new Date().getTime() - new Date(snackStartTime).getTime()) > TEN_MINUTES_IN_MS) {
-                    statusDisplay.textContent = 'Em Lanche (Atrasado)'; 
-                    statusDisplay.className = 'font-medium text-red-600';
-                } else {
-                    statusDisplay.textContent = 'Em Lanche'; 
-                    statusDisplay.className = 'font-medium text-blue-600';
-                }
-            } else if (!workEndTime) { 
-                statusDisplay.textContent = 'Expediente Iniciado'; 
-                statusDisplay.className = 'font-medium text-green-600'; 
-            } else { 
-                statusDisplay.textContent = 'Expediente Finalizado'; 
-                statusDisplay.className = 'font-medium text-red-600'; 
+            // Funções para gerenciar as seções
+            function showPonto() {
+                loginSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                adminSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                pontoSection.classList.remove('hidden');
+                setTimeout(() => {
+                    pontoSection.classList.add('opacity-100', 'scale-100');
+                }, 10);
             }
-        }
-
-        function saveData() {
-            const data = {
-                employeeName: employeeName,
-                workStartTime: workStartTime ? workStartTime.toISOString() : null,
-                lunchStartTime: lunchStartTime ? lunchStartTime.toISOString() : null,
-                lunchEndTime: lunchEndTime ? lunchEndTime.toISOString() : null,
-                snackStartTime: snackStartTime ? snackStartTime.toISOString() : null,
-                snackEndTime: snackEndTime ? snackEndTime.toISOString() : null,
-                workEndTime: workEndTime ? workEndTime.toISOString() : null,
-            };
-            let allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
-            const today = new Date().toISOString().split('T')[0];
-            if (!allEmployeesData[employeeName]) {
-                allEmployeesData[employeeName] = {};
+    
+            function showLogin() {
+                pontoSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                loginSection.classList.remove('hidden');
+                setTimeout(() => {
+                    loginSection.classList.add('opacity-100', 'scale-100');
+                }, 10);
             }
-            allEmployeesData[employeeName][today] = data;
-            localStorage.setItem('allEmployeeData', JSON.stringify(allEmployeesData));
-        }
-
-        function loadData() {
-            updateUI();
-        }
-
-        function resetDay(confirm = true) {
-            if (confirm) {
-                showNotification('Tem certeza que deseja resetar todos os dados do ponto para um novo dia?');
-                notificationOkButton.onclick = () => {
-                    hideNotification();
-                    performReset();
-                };
-            } else {
-                performReset();
+    
+            function showAdmin() {
+                loginSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                adminSection.classList.remove('hidden');
+                setTimeout(() => {
+                    adminSection.classList.add('opacity-100', 'scale-100');
+                }, 10);
             }
-        }
-        
-        // Funções para a Seção de Relatórios e Banco de Horas
-        function handleLogin() {
-            if (passwordInput.value === CORRECT_PASSWORD) {
-                showAdmin();
-                dateFilter.value = new Date().toISOString().split('T')[0];
-                monthFilter.value = new Date().toISOString().slice(0, 7);
-                loadReports(dateFilter.value);
-                loadBankHours(monthFilter.value); // Carrega o banco de horas assim que entra
-            } else {
-                loginMessage.textContent = 'Senha incorreta. Tente novamente.';
-                loginMessage.classList.remove('hidden');
-                passwordInput.value = '';
+    
+            // Funções para o Ponto Eletrônico
+            let employeeName = '';
+            let workStartTime = null;
+            let lunchStartTime = null;
+            let lunchEndTime = null;
+            let snackStartTime = null;
+            let snackEndTime = null;
+            let workEndTime = null;
+            const ONE_HOUR_IN_MS = 60 * 60 * 1000;
+            const TEN_MINUTES_IN_MS = 10 * 60 * 1000;
+            const employeeNameInput = document.getElementById('employeeName');
+            const lunchStartButton = document.getElementById('lunchStartButton');
+            const lunchEndButton = document.getElementById('lunchEndButton');
+            const snackStartButton = document.getElementById('snackStartButton');
+            const snackEndButton = document.getElementById('snackEndButton');
+            const endButton = document.getElementById('endButton');
+            const resetButton = document.getElementById('resetButton');
+            const workStartTimeDisplay = document.getElementById('workStartTimeDisplay');
+            const lunchStartTimeDisplay = document.getElementById('lunchStartTimeDisplay');
+            const lunchEndTimeDisplay = document.getElementById('lunchEndTimeDisplay');
+            const snackStartTimeDisplay = document.getElementById('snackStartTimeDisplay');
+            const snackEndTimeDisplay = document.getElementById('snackEndTimeDisplay');
+            const workEndTimeDisplay = document.getElementById('workEndTimeDisplay');
+            const lunchDurationDisplay = document.getElementById('lunchDurationDisplay');
+            const snackDurationDisplay = document.getElementById('snackDurationDisplay');
+            const totalWorkTimeDisplay = document.getElementById('totalWorkTimeDisplay');
+            const statusDisplay = document.getElementById('statusDisplay');
+            const relogioDisplay = document.getElementById('relogio');
+            const notificationModal = document.getElementById('notificationModal');
+            const notificationMessage = document.getElementById('notificationMessage');
+            const closeNotificationButton = document.getElementById('closeNotificationButton');
+            const notificationOkButton = document.getElementById('notificationOkButton');
+            let typingTimer;
+    
+            document.addEventListener('DOMContentLoaded', () => {
+                loadData();
+                setInterval(updateRelogio, 1000);
+                showPonto();
+            });
+    
+            function updateRelogio() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+                relogioDisplay.textContent = `${hours}:${minutes}:${seconds}`;
             }
-        }
-
-        function loadReports(dateString) {
-            reportContainer.innerHTML = '';
-            const allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
-            const [year, month, day] = dateString.split('-');
-            const formattedDate = `${day}/${month}/${year}`;
-            reportDate.textContent = `Relatório do dia: ${formattedDate}`;
-            let hasData = false;
-            for (const employee in allEmployeesData) {
-                if (allEmployeesData[employee][dateString]) {
-                    const data = allEmployeesData[employee][dateString];
-                    const reportCard = document.createElement('div');
-                    reportCard.className = 'bg-gray-100 p-4 rounded-xl shadow-inner';
-                    reportCard.innerHTML = `
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">${employee}</h3>
-                        <div class="flex flex-wrap text-sm text-gray-700">
-                            <p class="mr-4"><strong>Início:</strong> ${formatTime(data.workStartTime)}</p>
-                            <p class="mr-4"><strong>Almoço:</strong> ${formatTime(data.lunchStartTime)} - ${formatTime(data.lunchEndTime)}</p>
-                            <p class="mr-4"><strong>Lanche:</strong> ${formatTime(data.snackStartTime)} - ${formatTime(data.snackEndTime)}</p>
-                            <p class="mr-4"><strong>Fim:</strong> ${formatTime(data.workEndTime)}</p>
-                            <p class="mr-4"><strong>Total:</strong> ${formatTotalHours(calculateTotalWorkMinutes(data))}</p>
-                        </div>
-                    `;
-                    reportContainer.appendChild(reportCard);
-                    hasData = true;
-                }
+    
+            function formatTime(date) {
+                if (!date) return '--:--';
+                const d = new Date(date);
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
             }
-            if (!hasData) {
-                reportContainer.innerHTML = '<p class="text-center text-gray-500 text-lg">Nenhum ponto registrado para o dia selecionado.</p>';
-            }
-        }
-
-        function loadBankHours(monthString) {
-            bankReportContainer.innerHTML = '';
-            const allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
-            const employeeTotals = {};
             
-            for (const employee in allEmployeesData) {
-                employeeTotals[employee] = 0;
-                for (const date in allEmployeesData[employee]) {
-                    if (date.startsWith(monthString)) {
-                        const data = allEmployeesData[employee][date];
-                        employeeTotals[employee] += calculateTotalWorkMinutes(data);
+            function formatTotalHours(totalMinutes) {
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            }
+    
+            function calculateDuration(start, end) {
+                if (!start || !end) return 0;
+                const diffMs = new Date(end).getTime() - new Date(start).getTime();
+                if (diffMs < 0) return 0;
+                const totalMinutes = Math.floor(diffMs / (1000 * 60));
+                return totalMinutes;
+            }
+    
+            function showNotification(message) {
+                notificationMessage.textContent = message;
+                notificationModal.style.display = 'flex';
+            }
+    
+            function hideNotification() {
+                notificationModal.style.display = 'none';
+            }
+    
+            function performReset() {
+                employeeName = '';
+                workStartTime = null;
+                lunchStartTime = null;
+                lunchEndTime = null;
+                snackStartTime = null;
+                snackEndTime = null;
+                workEndTime = null;
+                localStorage.removeItem('employeeTimeData');
+                updateUI();
+                employeeNameInput.value = '';
+                employeeNameInput.disabled = false;
+                employeeNameInput.focus();
+            }
+    
+            function startWork() {
+                if (workStartTime) { return; }
+                employeeName = employeeNameInput.value.trim();
+                if (employeeName === '') { return; }
+                workStartTime = new Date();
+                employeeNameInput.disabled = true;
+                updateUI();
+                saveData();
+            }
+    
+            function startLunch() {
+                lunchStartTime = new Date();
+                updateUI();
+                saveData();
+            }
+    
+            function endLunch() {
+                lunchEndTime = new Date();
+                if (lunchStartTime && lunchEndTime) {
+                    const lunchDurationMs = new Date(lunchEndTime).getTime() - new Date(lunchStartTime).getTime();
+                    if (lunchDurationMs > ONE_HOUR_IN_MS) {
+                        showNotification('Você se atrasou no almoço!');
                     }
                 }
+                updateUI();
+                saveData();
             }
-
-            let hasData = false;
-            for (const employee in employeeTotals) {
-                if (employeeTotals[employee] > 0) {
-                    const totalHours = formatTotalHours(employeeTotals[employee]);
-                    const bankCard = document.createElement('div');
-                    bankCard.className = 'bg-gray-100 p-6 rounded-xl shadow-inner';
-                    bankCard.innerHTML = `
-                        <h3 class="text-xl font-bold text-gray-800">${employee}</h3>
-                        <p class="text-lg text-gray-700 mt-2"><strong>Total Trabalhado:</strong> ${totalHours}</p>
-                    `;
-                    bankReportContainer.appendChild(bankCard);
-                    hasData = true;
+    
+            function startSnack() {
+                snackStartTime = new Date();
+                updateUI();
+                saveData();
+            }
+    
+            function endSnack() {
+                snackEndTime = new Date();
+                if (snackStartTime && snackEndTime) {
+                    const snackDurationMs = new Date(snackEndTime).getTime() - new Date(snackStartTime).getTime();
+                    if (snackDurationMs > TEN_MINUTES_IN_MS) {
+                        showNotification('Seu lanche excedeu o tempo máximo de 10 minutos!');
+                    }
+                }
+                updateUI();
+                saveData();
+            }
+    
+            function endWork() {
+                workEndTime = new Date();
+                updateUI();
+                saveData();
+                showNotification('Ponto finalizado! Você pode resetar o dia para um novo registro.');
+            }
+            
+            function calculateTotalWorkMinutes(data) {
+                let totalWorkMs = 0;
+                if (data.workStartTime && data.workEndTime) {
+                    totalWorkMs = new Date(data.workEndTime).getTime() - new Date(data.workStartTime).getTime();
+                    if (data.lunchStartTime && data.lunchEndTime) {
+                        const lunchDurationMs = new Date(data.lunchEndTime).getTime() - new Date(data.lunchStartTime).getTime();
+                        totalWorkMs -= lunchDurationMs;
+                    }
+                    if (data.snackStartTime && data.snackEndTime) {
+                        const snackDurationMs = new Date(data.snackEndTime).getTime() - new Date(data.snackStartTime).getTime();
+                        totalWorkMs -= snackDurationMs;
+                    }
+                }
+                return Math.floor(totalWorkMs / (1000 * 60));
+            }
+    
+            function updateUI() {
+                employeeNameInput.value = employeeName;
+                workStartTimeDisplay.textContent = formatTime(workStartTime);
+                lunchStartTimeDisplay.textContent = formatTime(lunchStartTime);
+                lunchEndTimeDisplay.textContent = formatTime(lunchEndTime);
+                snackStartTimeDisplay.textContent = formatTime(snackStartTime);
+                snackEndTimeDisplay.textContent = formatTime(snackEndTime);
+                workEndTimeDisplay.textContent = formatTime(workEndTime);
+                lunchDurationDisplay.textContent = formatTotalHours(calculateDuration(lunchStartTime, lunchEndTime));
+                snackDurationDisplay.textContent = formatTotalHours(calculateDuration(snackStartTime, snackEndTime));
+                totalWorkTimeDisplay.textContent = formatTotalHours(calculateTotalWorkMinutes({ workStartTime, lunchStartTime, lunchEndTime, snackStartTime, snackEndTime, workEndTime }));
+                
+                lunchStartButton.disabled = !workStartTime || !!lunchStartTime || !!workEndTime || !!snackStartTime;
+                lunchEndButton.disabled = !lunchStartTime || !!lunchEndTime || !!workEndTime;
+                snackStartButton.disabled = !workStartTime || !!snackStartTime || !!workEndTime;
+                snackEndButton.disabled = !snackStartTime || !!snackEndTime || !!workEndTime;
+                endButton.disabled = !workStartTime || (lunchStartTime && !lunchEndTime) || (snackStartTime && !snackEndTime) || !!workEndTime;
+                
+                if (!workStartTime) { 
+                    statusDisplay.textContent = 'Aguardando Início'; 
+                    statusDisplay.className = 'font-medium text-gray-600'; 
+                } else if (lunchStartTime && !lunchEndTime) {
+                    if ((new Date().getTime() - new Date(lunchStartTime).getTime()) > ONE_HOUR_IN_MS) {
+                        statusDisplay.textContent = 'Em Almoço (Atrasado)'; 
+                        statusDisplay.className = 'font-medium text-red-600';
+                    } else {
+                        statusDisplay.textContent = 'Em Almoço'; 
+                        statusDisplay.className = 'font-medium text-yellow-600';
+                    }
+                } else if (snackStartTime && !snackEndTime) {
+                    if ((new Date().getTime() - new Date(snackStartTime).getTime()) > TEN_MINUTES_IN_MS) {
+                        statusDisplay.textContent = 'Em Lanche (Atrasado)'; 
+                        statusDisplay.className = 'font-medium text-red-600';
+                    } else {
+                        statusDisplay.textContent = 'Em Lanche'; 
+                        statusDisplay.className = 'font-medium text-orange-600';
+                    }
+                } else if (!workEndTime) { 
+                    statusDisplay.textContent = 'Expediente Iniciado'; 
+                    statusDisplay.className = 'font-medium text-green-600'; 
+                } else { 
+                    statusDisplay.textContent = 'Expediente Finalizado'; 
+                    statusDisplay.className = 'font-medium text-red-600'; 
+                }
+            }
+    
+            function saveData() {
+                const data = {
+                    employeeName: employeeName,
+                    workStartTime: workStartTime ? workStartTime.toISOString() : null,
+                    lunchStartTime: lunchStartTime ? lunchStartTime.toISOString() : null,
+                    lunchEndTime: lunchEndTime ? lunchEndTime.toISOString() : null,
+                    snackStartTime: snackStartTime ? snackStartTime.toISOString() : null,
+                    snackEndTime: snackEndTime ? snackEndTime.toISOString() : null,
+                    workEndTime: workEndTime ? workEndTime.toISOString() : null,
+                };
+                let allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
+                const today = new Date().toISOString().split('T')[0];
+                if (!allEmployeesData[employeeName]) {
+                    allEmployeesData[employeeName] = {};
+                }
+                allEmployeesData[employeeName][today] = data;
+                localStorage.setItem('allEmployeeData', JSON.stringify(allEmployeesData));
+            }
+    
+            function loadData() {
+                updateUI();
+            }
+    
+            function resetDay(confirm = true) {
+                if (confirm) {
+                    showNotification('Tem certeza que deseja resetar todos os dados do ponto para um novo dia?');
+                    notificationOkButton.onclick = () => {
+                        hideNotification();
+                        performReset();
+                    };
+                } else {
+                    performReset();
                 }
             }
             
-            if (!hasData) {
-                bankReportContainer.innerHTML = '<p class="text-center text-gray-500 text-lg">Nenhum dado de banco de horas encontrado para este mês.</p>';
-            }
-        }
-
-        function toggleBankHoursSection() {
-            bankContainer.classList.toggle('hidden');
-            bankReportContainer.classList.toggle('hidden');
-            if (!bankContainer.classList.contains('hidden')) {
-                toggleBankButton.textContent = 'Ocultar Banco de Horas';
-                loadBankHours(monthFilter.value);
-            } else {
-                toggleBankButton.textContent = 'Ver Banco de Horas';
-            }
-        }
-
-        function exportToCSV() {
-            const allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
-            const dateString = dateFilter.value;
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Nome do Funcionário,Data,Início Expediente,Início Almoço,Fim Almoço,Início Lanche,Fim Lanche,Fim Expediente,Duração Almoço,Duração Lanche,Total Trabalhado\n";
-            for (const employee in allEmployeesData) {
-                if (allEmployeesData[employee][dateString]) {
-                    const data = allEmployeesData[employee][dateString];
-                    const row = [
-                        `"${employee}"`,
-                        new Date(dateString).toLocaleDateString('pt-BR'),
-                        formatTime(data.workStartTime),
-                        formatTime(data.lunchStartTime),
-                        formatTime(data.lunchEndTime),
-                        formatTime(data.snackStartTime),
-                        formatTime(data.snackEndTime),
-                        formatTime(data.workEndTime),
-                        formatTotalHours(calculateDuration(data.lunchStartTime, data.lunchEndTime)),
-                        formatTotalHours(calculateDuration(data.snackStartTime, data.snackEndTime)),
-                        formatTotalHours(calculateTotalWorkMinutes(data))
-                    ].join(',');
-                    csvContent += row + "\n";
+            // Funções para a Seção de Relatórios e Banco de Horas
+            function handleLogin() {
+                if (passwordInput.value === CORRECT_PASSWORD) {
+                    showAdmin();
+                    dateFilter.value = new Date().toISOString().split('T')[0];
+                    monthFilter.value = new Date().toISOString().slice(0, 7);
+                    loadReports(dateFilter.value);
+                    loadBankHours(monthFilter.value);
+                } else {
+                    loginMessage.textContent = 'Senha incorreta. Tente novamente.';
+                    loginMessage.classList.remove('hidden');
+                    passwordInput.value = '';
                 }
             }
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `ponto_relatorio_${dateString}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Event Listeners
-        startButton.addEventListener('click', startWork);
-        lunchStartButton.addEventListener('click', startLunch);
-        lunchEndButton.addEventListener('click', endLunch);
-        snackStartButton.addEventListener('click', startSnack);
-        snackEndButton.addEventListener('click', endSnack);
-        endButton.addEventListener('click', endWork);
-        resetButton.addEventListener('click', () => resetDay(true));
-        closeNotificationButton.addEventListener('click', hideNotification);
-        notificationOkButton.addEventListener('click', hideNotification);
-        window.addEventListener('click', (event) => { if (event.target == notificationModal) { hideNotification(); } });
-        showAdminButton.addEventListener('click', showLogin);
-        backToPontoButton.addEventListener('click', showPonto);
-        loginButton.addEventListener('click', handleLogin);
-        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { handleLogin(); } });
-        logoutButton.addEventListener('click', showPonto);
-        filterButton.addEventListener('click', () => loadReports(dateFilter.value));
-        monthFilter.addEventListener('change', () => loadBankHours(monthFilter.value));
-        exportButton.addEventListener('click', exportToCSV);
-        toggleBankButton.addEventListener('click', toggleBankHoursSection);
+    
+            function loadReports(dateString) {
+                reportContainer.innerHTML = '';
+                const allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
+                const [year, month, day] = dateString.split('-');
+                const formattedDate = `${day}/${month}/${year}`;
+                reportDate.textContent = `Relatório do dia: ${formattedDate}`;
+                let hasData = false;
+                for (const employee in allEmployeesData) {
+                    if (allEmployeesData[employee][dateString]) {
+                        const data = allEmployeesData[employee][dateString];
+                        const reportCard = document.createElement('div');
+                        reportCard.className = 'card p-4 rounded-xl shadow-inner';
+                        reportCard.innerHTML = `
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">${employee}</h3>
+                            <div class="flex flex-wrap text-sm text-gray-700">
+                                <p class="mr-4"><strong>Início:</strong> ${formatTime(data.workStartTime)}</p>
+                                <p class="mr-4"><strong>Almoço:</strong> ${formatTime(data.lunchStartTime)} - ${formatTime(data.lunchEndTime)}</p>
+                                <p class="mr-4"><strong>Lanche:</strong> ${formatTime(data.snackStartTime)} - ${formatTime(data.snackEndTime)}</p>
+                                <p class="mr-4"><strong>Fim:</strong> ${formatTime(data.workEndTime)}</p>
+                                <p class="mr-4"><strong>Total:</strong> ${formatTotalHours(calculateTotalWorkMinutes(data))}</p>
+                            </div>
+                        `;
+                        reportContainer.appendChild(reportCard);
+                        hasData = true;
+                    }
+                }
+                if (!hasData) {
+                    reportContainer.innerHTML = '<p class="text-center text-gray-500 text-lg">Nenhum ponto registrado para o dia selecionado.</p>';
+                }
+            }
+    
+            function loadBankHours(monthString) {
+                bankReportContainer.innerHTML = '';
+                const allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
+                const employeeTotals = {};
+                const monthName = new Date(monthString + '-01').toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
+    
+                bankReportContainer.innerHTML = `<h2 class="text-2xl font-bold text-gray-800 mb-4">Banco de Horas - ${monthName}</h2>`;
+                
+                for (const employee in allEmployeesData) {
+                    employeeTotals[employee] = 0;
+                    for (const date in allEmployeesData[employee]) {
+                        if (date.startsWith(monthString)) {
+                            const data = allEmployeesData[employee][date];
+                            employeeTotals[employee] += calculateTotalWorkMinutes(data);
+                        }
+                    }
+                }
+    
+                let hasData = false;
+                for (const employee in employeeTotals) {
+                    if (employeeTotals[employee] > 0) {
+                        const totalHours = formatTotalHours(employeeTotals[employee]);
+                        const bankCard = document.createElement('div');
+                        bankCard.className = 'card p-6 rounded-xl shadow-inner';
+                        bankCard.innerHTML = `
+                            <h3 class="text-xl font-bold text-gray-800">${employee}</h3>
+                            <p class="text-lg text-gray-700 mt-2"><strong>Total Trabalhado:</strong> ${totalHours}</p>
+                        `;
+                        bankReportContainer.appendChild(bankCard);
+                        hasData = true;
+                    }
+                }
+                
+                if (!hasData) {
+                    bankReportContainer.innerHTML += '<p class="text-center text-gray-500 text-lg">Nenhum dado de banco de horas encontrado para este mês.</p>';
+                }
+            }
+    
+            function toggleBankHoursSection() {
+                bankContainer.classList.toggle('hidden');
+                bankReportContainer.classList.toggle('hidden');
+                if (!bankContainer.classList.contains('hidden')) {
+                    toggleBankButton.textContent = 'Ocultar Banco de Horas';
+                    const downloadButtonHTML = `<button id="downloadBankHoursButton" class="btn accent w-full mt-4">
+                                                    Salvar/Baixar Resultado do Mês
+                                                </button>`;
+                    bankReportContainer.innerHTML += downloadButtonHTML;
+                    loadBankHours(monthFilter.value);
+                    document.getElementById('downloadBankHoursButton').addEventListener('click', exportBankHoursToCSV);
+                } else {
+                    toggleBankButton.textContent = 'Ver Banco de Horas';
+                }
+            }
+    
+            function exportToCSV() {
+                const allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
+                const dateString = dateFilter.value;
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "Nome do Funcionário,Data,Início Expediente,Início Almoço,Fim Almoço,Início Lanche,Fim Lanche,Fim Expediente,Duração Almoço,Duração Lanche,Total Trabalhado\n";
+                for (const employee in allEmployeesData) {
+                    if (allEmployeesData[employee][dateString]) {
+                        const data = allEmployeesData[employee][dateString];
+                        const row = [
+                            `"${employee}"`,
+                            new Date(dateString).toLocaleDateString('pt-BR'),
+                            formatTime(data.workStartTime),
+                            formatTime(data.lunchStartTime),
+                            formatTime(data.lunchEndTime),
+                            formatTime(data.snackStartTime),
+                            formatTime(data.snackEndTime),
+                            formatTime(data.workEndTime),
+                            formatTotalHours(calculateDuration(data.lunchStartTime, data.lunchEndTime)),
+                            formatTotalHours(calculateDuration(data.snackStartTime, data.snackEndTime)),
+                            formatTotalHours(calculateTotalWorkMinutes(data))
+                        ].join(',');
+                        csvContent += row + "\n";
+                    }
+                }
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `ponto_relatorio_${dateString}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+    
+            function exportBankHoursToCSV() {
+                const monthString = monthFilter.value;
+                const allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
+                const employeeTotals = {};
+    
+                for (const employee in allEmployeesData) {
+                    employeeTotals[employee] = 0;
+                    for (const date in allEmployeesData[employee]) {
+                        if (date.startsWith(monthString)) {
+                            const data = allEmployeesData[employee][date];
+                            employeeTotals[employee] += calculateTotalWorkMinutes(data);
+                        }
+                    }
+                }
+    
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "Nome do Funcionário,Total de Horas Trabalhadas (mês)\n";
+    
+                for (const employee in employeeTotals) {
+                    if (employeeTotals[employee] > 0) {
+                        const totalHours = formatTotalHours(employeeTotals[employee]);
+                        const row = `"${employee}",${totalHours}`;
+                        csvContent += row + "\n";
+                    }
+                }
+    
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `banco_de_horas_${monthString}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+    
+            // Event Listeners
+            employeeNameInput.addEventListener('input', () => {
+                clearTimeout(typingTimer);
+                if (employeeNameInput.value.trim() !== '') {
+                    typingTimer = setTimeout(startWork, 5000);
+                }
+            });
+            lunchStartButton.addEventListener('click', startLunch);
+            lunchEndButton.addEventListener('click', endLunch);
+            snackStartButton.addEventListener('click', startSnack);
+            snackEndButton.addEventListener('click', endSnack);
+            endButton.addEventListener('click', endWork);
+            resetButton.addEventListener('click', () => resetDay(true));
+            closeNotificationButton.addEventListener('click', hideNotification);
+            notificationOkButton.addEventListener('click', hideNotification);
+            window.addEventListener('click', (event) => { if (event.target == notificationModal) { hideNotification(); } });
+            showAdminButton.addEventListener('click', showLogin);
+            backToPontoButton.addEventListener('click', showPonto);
+            loginButton.addEventListener('click', handleLogin);
+            passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { handleLogin(); } });
+            logoutButton.addEventListener('click', showPonto);
+            filterButton.addEventListener('click', () => loadReports(dateFilter.value));
+            monthFilter.addEventListener('change', () => loadBankHours(monthFilter.value));
+            exportButton.addEventListener('click', exportToCSV);
+            toggleBankButton.addEventListener('click', toggleBankHoursSection);
+        })();
     </script>
 </body>
 </html>

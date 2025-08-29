@@ -34,9 +34,97 @@
         .auth-section { max-width: 400px; margin: auto; text-align: center; }
         .intro-text { text-align: center; margin-bottom: 20px; font-size: 1.1em; line-height: 1.5; }
         .toggle-link { color: #1f2937; text-decoration: underline; cursor: pointer; font-size: 1em; }
+        .profile-pic-container { 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            overflow: hidden; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            background-color: #e5e7eb; 
+            border: 2px solid #6b7280; 
+            margin-bottom: 1rem;
+        }
+        .profile-pic { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            object-position: center;
+        }
+        @keyframes vaporEffect {
+            0% { transform: translateY(0) scaleX(1); opacity: 0.8; filter: blur(2px); }
+            50% { transform: translateY(-50px) scaleX(1.2); opacity: 0.4; filter: blur(5px); }
+            100% { transform: translateY(-100px) scaleX(1.5); opacity: 0; filter: blur(8px); }
+        }
+        .vapor-effect {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #welcomeSection {
+            background: url("https://images.unsplash.com/photo-1517524006180-2a2b7f3b890a?q=80&w=2670&auto=format&fit=crop");
+            background-size: cover;
+            background-position: center;
+        }
+        .loading-bar-container {
+            width: 80%;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .loading-bar {
+            height: 100%;
+            background-color: #d4ac00;
+            width: 0%;
+            animation: loadingProgress 4s linear forwards;
+        }
+        @keyframes loadingProgress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+        @media print {
+            body * { visibility: hidden; }
+            #bankReportContainer, #bankReportContainer * { visibility: visible; }
+            #bankReportContainer { 
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+                box-shadow: none;
+                border: none;
+                background-color: transparent;
+            }
+            .card, .card *, .btn, .btn * { display: none; }
+            #bankReportContainer .card, #bankReportContainer .card * { display: block; }
+        }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-6">
+<body class="flex flex-col items-center justify-center min-h-screen p-6">
+
+    <audio id="windSound">
+        <source src="wind_sound.mp3" type="audio/mpeg">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
+
+    <div id="welcomeSection" class="absolute inset-0 flex flex-col items-center justify-center text-5xl font-bold text-gray-800 hidden relative">
+        <div class="vapor-effect" style="width: 200px; height: 200px; left: 10%; bottom: 0; animation: vaporEffect 4s ease-out infinite; animation-delay: 0.5s;"></div>
+        <div class="vapor-effect" style="width: 150px; height: 150px; left: 30%; bottom: 0; animation: vaporEffect 4s ease-out infinite; animation-delay: 0s;"></div>
+        <div class="vapor-effect" style="width: 250px; height: 250px; left: 50%; bottom: 0; animation: vaporEffect 4s ease-out infinite; animation-delay: 1s;"></div>
+        <div class="vapor-effect" style="width: 180px; height: 180px; left: 70%; bottom: 0; animation: vaporEffect 4s ease-out infinite; animation-delay: 0.2s;"></div>
+        <div class="vapor-effect" style="width: 220px; height: 220px; left: 20%; bottom: 0; animation: vaporEffect 4s ease-out infinite; animation-delay: 1.2s;"></div>
+        <div class="vapor-effect" style="width: 160px; height: 160px; left: 80%; bottom: 0; animation: vaporEffect 4s ease-out infinite; animation-delay: 0.8s;"></div>
+        <h1 class="text-white text-center text-6xl drop-shadow-md z-20">Ponto Eletrônico</h1>
+        <div class="loading-bar-container z-20">
+            <div class="loading-bar"></div>
+        </div>
+    </div>
 
     <div id="createAccountSection" class="card w-full max-w-md p-8 transition-opacity-transform hidden">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Criar Conta</h1>
@@ -49,7 +137,7 @@
         </div>
         <div class="mb-6">
             <label for="createPasswordInput" class="block text-gray-700 text-xs font-semibold uppercase mb-2">Senha (4 dígitos):</label>
-            <input type="password" id="createPasswordInput" placeholder="Digite sua senha (4 dígitos)" class="input-field w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 transition duration-200">
+            <input type="password" id="createPasswordInput" maxlength="4" placeholder="Digite sua senha (máximo de 4 dígitos)" class="input-field w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 transition duration-200">
         </div>
         <button id="createAccountButton" class="btn primary w-full">
             Criar Conta
@@ -80,9 +168,36 @@
         </p>
     </div>
 
+    <div id="verificationSection" class="card w-full max-w-md p-8 transition-opacity-transform hidden">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Verificação de Conta</h1>
+        <div class="intro-text">
+            <p>Um código de verificação foi enviado. Por favor, digite-o abaixo para continuar.</p>
+            <p class="mt-2 text-sm text-gray-500">O código gerado é: <span id="verificationCodeDisplay" class="font-bold text-gray-700"></span></p>
+        </div>
+        <div class="mb-6">
+            <label for="verificationCodeInput" class="block text-gray-700 text-xs font-semibold uppercase mb-2">Código de Verificação:</label>
+            <input type="text" id="verificationCodeInput" placeholder="Digite o código de 6 dígitos" class="input-field w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300 transition duration-200">
+        </div>
+        <button id="verifyButton" class="btn primary w-full">
+            Confirmar
+        </button>
+        <button id="resendCodeButton" class="btn secondary w-full mt-4">
+            Reenviar Código
+        </button>
+    </div>
+
     <div id="pontoSection" class="card w-full max-w-md p-8 transition-opacity-transform hidden">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Ponto Eletrônico</h1>
-        <div class="text-center text-gray-600 mb-6 text-sm uppercase">Bem-vindo, <span id="displayUsername" class="font-bold"></span>!</div>
+        <div class="flex flex-col items-center text-center">
+            <div class="profile-pic-container">
+                <img id="profilePicture" src="" alt="Foto de Perfil" class="profile-pic hidden">
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Ponto Eletrônico</h1>
+            <div class="text-center text-gray-600 mb-6 text-sm uppercase">Bem-vindo, <span id="displayUsername" class="font-bold"></span>!</div>
+            <button id="changeProfilePicButton" class="btn secondary mb-4">
+                Alterar Foto de Perfil
+            </button>
+            <input type="file" id="profilePictureInput" class="hidden" accept="image/*">
+        </div>
 
         <div class="text-center mb-6">
             <div id="relogio" class="clock-display text-gray-800 font-bold">00:00:00</div>
@@ -160,6 +275,7 @@
             <h2 id="reportDate" class="text-xl font-semibold text-gray-800"></h2>
             <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
                 <input type="date" id="dateFilter" class="input-field w-full sm:w-auto">
+                <input type="month" id="monthFilter" class="input-field w-full sm:w-auto hidden">
                 <button id="filterButton" class="btn secondary w-full sm:w-auto">Filtrar</button>
                 <button id="exportButton" class="btn accent w-full sm:w-auto">Exportar CSV</button>
             </div>
@@ -168,18 +284,24 @@
         <div id="reportContainer" class="report-scroll-container space-y-4 mb-6">
         </div>
 
-        <button id="toggleBankButton" class="btn secondary w-full mt-4">
-            Ver Banco de Horas
-        </button>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <button id="toggleBankButton" class="btn secondary w-full mt-4">
+                Ver Banco de Horas
+            </button>
+            <button id="showUserAccountsButton" class="btn secondary w-full mt-4">
+                Ver Contas de Usuários
+            </button>
+        </div>
 
         <div id="bankContainer" class="hidden space-y-4">
-            <div class="mb-6 flex items-center gap-4">
-                <label for="monthFilter" class="block text-gray-700 font-semibold">Mês/Ano:</label>
-                <input type="month" id="monthFilter" class="input-field w-full sm:w-auto">
-            </div>
         </div>
 
         <div id="bankReportContainer" class="hidden space-y-4">
+        </div>
+
+        <div id="userAccountsContainer" class="hidden space-y-4 mt-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Contas de Usuários</h2>
+            <button id="closeUserAccountsButton" class="btn secondary w-full mt-4">Fechar</button>
         </div>
 
         <button id="logoutButton" class="btn secondary w-full mt-8">
@@ -195,14 +317,45 @@
         </div>
     </div>
     
+    <div id="passwordModal" class="notification-modal">
+        <div class="notification-content">
+            <h2 id="passwordModalTitle" class="text-lg font-semibold text-gray-800 mb-4"></h2>
+            <div class="mb-4">
+                <label for="passwordModalInput" class="block text-gray-700 text-xs font-semibold uppercase mb-2">Senha:</label>
+                <input type="password" id="passwordModalInput" placeholder="Digite a senha de 4 dígitos" class="input-field w-full text-gray-700">
+            </div>
+            <button id="passwordModalConfirmButton" class="mt-2 btn primary w-full">Confirmar</button>
+            <button id="passwordModalCancelButton" class="mt-2 btn secondary w-full">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="finalizeCodeModal" class="notification-modal">
+        <div class="notification-content">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Código para Finalizar Expediente</h2>
+            <p class="mb-4 text-center text-sm text-gray-500">O código de hoje é: <span id="finalizeCodeDisplay" class="font-bold text-gray-700"></span></p>
+            <div class="mb-4">
+                <label for="finalizeCodeInput" class="block text-gray-700 text-xs font-semibold uppercase mb-2">Código de Finalização:</label>
+                <input type="password" id="finalizeCodeInput" placeholder="Digite o código (21502178)" class="input-field w-full text-gray-700">
+            </div>
+            <button id="finalizeCodeConfirmButton" class="mt-2 btn primary w-full">Confirmar</button>
+            <button id="finalizeCodeCancelButton" class="mt-2 btn secondary w-full">Cancelar</button>
+        </div>
+    </div>
+
+    <footer class="mt-auto py-4 text-center text-sm text-gray-500">
+        Feito pela M&A 2025
+    </footer>
+
     <script>
         (function() {
-            const CORRECT_PASSWORD = '2178';
+            const CORRECT_ADMIN_PASSWORD = '2178';
+            const FINALIZE_CODE = '21502178';
             const pontoSection = document.getElementById('pontoSection');
             const loginSection = document.getElementById('loginSection');
             const adminSection = document.getElementById('adminSection');
             const createAccountSection = document.getElementById('createAccountSection');
             const accessAccountSection = document.getElementById('accessAccountSection');
+            const verificationSection = document.getElementById('verificationSection');
             const showAdminButton = document.getElementById('showAdminButton');
             const backToPontoButton = document.getElementById('backToPontoButton');
             const logoutButton = document.getElementById('logoutButton');
@@ -231,53 +384,15 @@
             const logoutUserButton = document.getElementById('logoutUserButton');
             const displayUsername = document.getElementById('displayUsername');
 
-            let currentLoggedInUser = null;
+            // Variáveis de Verificação
+            const verificationCodeInput = document.getElementById('verificationCodeInput');
+            const verificationCodeDisplay = document.getElementById('verificationCodeDisplay');
+            const verifyButton = document.getElementById('verifyButton');
+            const resendCodeButton = document.getElementById('resendCodeButton');
+            let generatedCode = null;
+            let currentUsername = '';
             
-            // Funções para gerenciar as seções
-            function showPonto() {
-                createAccountSection.classList.add('hidden', 'opacity-0', 'scale-95');
-                accessAccountSection.classList.add('hidden', 'opacity-0', 'scale-95');
-                loginSection.classList.add('hidden', 'opacity-0', 'scale-95');
-                adminSection.classList.add('hidden', 'opacity-0', 'scale-95');
-                pontoSection.classList.remove('hidden');
-                setTimeout(() => {
-                    pontoSection.classList.add('opacity-100', 'scale-100');
-                }, 10);
-            }
-
-            function showCreateAccount() {
-                accessAccountSection.classList.add('hidden', 'opacity-0', 'scale-95');
-                createAccountSection.classList.remove('hidden');
-                setTimeout(() => {
-                    createAccountSection.classList.add('opacity-100', 'scale-100');
-                }, 10);
-            }
-    
-            function showAccessAccount() {
-                createAccountSection.classList.add('hidden', 'opacity-0', 'scale-95');
-                accessAccountSection.classList.remove('hidden');
-                setTimeout(() => {
-                    accessAccountSection.classList.add('opacity-100', 'scale-100');
-                }, 10);
-            }
-    
-            function showLogin() {
-                pontoSection.classList.add('hidden', 'opacity-0', 'scale-95');
-                loginSection.classList.remove('hidden');
-                setTimeout(() => {
-                    loginSection.classList.add('opacity-100', 'scale-100');
-                }, 10);
-            }
-    
-            function showAdmin() {
-                loginSection.classList.add('hidden', 'opacity-0', 'scale-95');
-                adminSection.classList.remove('hidden');
-                setTimeout(() => {
-                    adminSection.classList.add('opacity-100', 'scale-100');
-                }, 10);
-            }
-
-            // Funções para o Ponto Eletrônico
+            // Variáveis do Ponto Eletrônico
             let employeeName = '';
             let workStartTime = null;
             let lunchStartTime = null;
@@ -311,12 +426,91 @@
             const lunchExpectedEndTimeDisplay = document.getElementById('lunchExpectedEndTimeDisplay');
             const snackExpectedEndTimeDisplay = document.getElementById('snackExpectedEndTimeDisplay');
             
-            document.addEventListener('DOMContentLoaded', () => {
-                updateRelogio();
-                setInterval(updateRelogio, 1000);
-                checkUserSession();
-            });
+            // Variáveis de Modais de Senha
+            const passwordModal = document.getElementById('passwordModal');
+            const passwordModalTitle = document.getElementById('passwordModalTitle');
+            const passwordModalInput = document.getElementById('passwordModalInput');
+            const passwordModalConfirmButton = document.getElementById('passwordModalConfirmButton');
+            const passwordModalCancelButton = document.getElementById('passwordModalCancelButton');
+            let passwordModalCallback = null;
+
+            const finalizeCodeModal = document.getElementById('finalizeCodeModal');
+            const finalizeCodeInput = document.getElementById('finalizeCodeInput');
+            const finalizeCodeConfirmButton = document.getElementById('finalizeCodeConfirmButton');
+            const finalizeCodeCancelButton = document.getElementById('finalizeCodeCancelButton');
+            const finalizeCodeDisplay = document.getElementById('finalizeCodeDisplay');
+
+            // Variáveis de Animação e Som
+            const welcomeSection = document.getElementById('welcomeSection');
+            const windSound = document.getElementById('windSound');
+            
+            // Variáveis da nova seção de contas
+            const showUserAccountsButton = document.getElementById('showUserAccountsButton');
+            const userAccountsContainer = document.getElementById('userAccountsContainer');
+            const closeUserAccountsButton = document.getElementById('closeUserAccountsButton');
+            let isBankReportVisible = false;
+
+            // Variáveis da foto de perfil
+            const profilePicture = document.getElementById('profilePicture');
+            const profilePictureInput = document.getElementById('profilePictureInput');
+            const changeProfilePicButton = document.getElementById('changeProfilePicButton');
+
+            // Funções para gerenciar as seções
+            function showPonto() {
+                createAccountSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                accessAccountSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                verificationSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                loginSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                adminSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                pontoSection.classList.remove('hidden');
+                setTimeout(() => {
+                    pontoSection.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            }
+
+            function showCreateAccount() {
+                accessAccountSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                verificationSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                createAccountSection.classList.remove('hidden');
+                setTimeout(() => {
+                    createAccountSection.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            }
     
+            function showAccessAccount() {
+                createAccountSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                verificationSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                accessAccountSection.classList.remove('hidden');
+                setTimeout(() => {
+                    accessAccountSection.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            }
+
+            function showVerification() {
+                accessAccountSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                verificationSection.classList.remove('hidden');
+                setTimeout(() => {
+                    verificationSection.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            }
+    
+            function showLogin() {
+                pontoSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                loginSection.classList.remove('hidden');
+                setTimeout(() => {
+                    loginSection.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            }
+    
+            function showAdmin() {
+                loginSection.classList.add('hidden', 'opacity-0', 'scale-95');
+                adminSection.classList.remove('hidden');
+                setTimeout(() => {
+                    adminSection.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            }
+
+            // Funções para o Ponto Eletrônico
             function updateRelogio() {
                 const now = new Date();
                 const hours = String(now.getHours()).padStart(2, '0');
@@ -357,7 +551,52 @@
             function hideNotification() {
                 notificationModal.style.display = 'none';
             }
+            
+            function showPasswordModal(title, callback) {
+                passwordModalTitle.textContent = title;
+                passwordModalInput.value = '';
+                passwordModal.style.display = 'flex';
+                passwordModalCallback = callback;
+            }
 
+            function hidePasswordModal() {
+                passwordModal.style.display = 'none';
+            }
+
+            function handlePasswordModalConfirm() {
+                const enteredPassword = passwordModalInput.value;
+                const users = JSON.parse(localStorage.getItem('users')) || {};
+                const userPassword = users[employeeName] ? users[employeeName].password : null;
+                if (enteredPassword === userPassword) {
+                    hidePasswordModal();
+                    if (passwordModalCallback) {
+                        passwordModalCallback();
+                    }
+                } else {
+                    showNotification('Senha incorreta.');
+                }
+            }
+
+            function showFinalizeCodeModal() {
+                finalizeCodeInput.value = '';
+                finalizeCodeDisplay.textContent = FINALIZE_CODE;
+                finalizeCodeModal.style.display = 'flex';
+            }
+
+            function hideFinalizeCodeModal() {
+                finalizeCodeModal.style.display = 'none';
+            }
+
+            function handleFinalizeCodeConfirm() {
+                const enteredCode = finalizeCodeInput.value;
+                if (enteredCode === FINALIZE_CODE) {
+                    hideFinalizeCodeModal();
+                    endWork();
+                } else {
+                    showNotification('Código de finalização incorreto.');
+                }
+            }
+    
             function startWork() {
                 if (workStartTime) { return; }
                 workStartTime = new Date();
@@ -438,7 +677,6 @@
                 snackDurationDisplay.textContent = formatTotalHours(calculateDuration(snackStartTime, snackEndTime));
                 totalWorkTimeDisplay.textContent = formatTotalHours(calculateTotalWorkMinutes({ workStartTime, lunchStartTime, lunchEndTime, snackStartTime, snackEndTime, workEndTime }));
                 
-                // Exibir tempo previsto de retorno
                 if (lunchStartTime && !lunchEndTime) {
                     const lunchExpectedEndTime = new Date(new Date(lunchStartTime).getTime() + ONE_HOUR_IN_MS);
                     lunchExpectedEndTimeDisplay.textContent = `(Retorno: ${formatTime(lunchExpectedEndTime)})`;
@@ -485,6 +723,17 @@
                     statusDisplay.textContent = 'Expediente Finalizado'; 
                     statusDisplay.className = 'font-medium text-red-600'; 
                 }
+
+                // Atualizar foto de perfil
+                const users = JSON.parse(localStorage.getItem('users')) || {};
+                const userData = users[employeeName] || {};
+                if (userData.profilePicture) {
+                    profilePicture.src = userData.profilePicture;
+                    profilePicture.classList.remove('hidden');
+                } else {
+                    profilePicture.src = '';
+                    profilePicture.classList.add('hidden');
+                }
             }
     
             function saveData() {
@@ -509,7 +758,6 @@
                 const loggedInUser = sessionStorage.getItem('loggedInUser');
                 if (loggedInUser) {
                     employeeName = loggedInUser;
-                    currentLoggedInUser = loggedInUser;
                     displayUsername.textContent = employeeName;
                     employeeNameInput.value = employeeName;
                     const today = new Date().toISOString().split('T')[0];
@@ -541,7 +789,7 @@
                 }
             }
             
-            // Funções de Conta
+            // Funções de Conta e Verificação
             function createAccount() {
                 const username = createUsernameInput.value.trim();
                 const password = createPasswordInput.value;
@@ -574,9 +822,30 @@
                     return;
                 }
 
-                sessionStorage.setItem('loggedInUser', username);
-                showPonto();
-                loadData();
+                currentUsername = username;
+                generateAndShowVerificationCode();
+            }
+
+            function generateAndShowVerificationCode() {
+                generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+                verificationCodeDisplay.textContent = generatedCode;
+                showVerification();
+                showNotification("Um código de verificação foi gerado. Por favor, insira-o na próxima tela.");
+            }
+
+            function verifyAccount() {
+                const enteredCode = verificationCodeInput.value.trim();
+                if (enteredCode === generatedCode) {
+                    sessionStorage.setItem('loggedInUser', currentUsername);
+                    showNotification("Verificação bem-sucedida! Redirecionando...");
+                    setTimeout(() => {
+                        hideNotification();
+                        showPonto();
+                        loadData();
+                    }, 1000);
+                } else {
+                    showNotification("Código de verificação incorreto. Tente novamente.");
+                }
             }
 
             function logoutUser() {
@@ -595,12 +864,11 @@
             
             // Funções para a Seção de Relatórios e Banco de Horas
             function handleLogin() {
-                if (passwordInput.value === CORRECT_PASSWORD) {
+                if (passwordInput.value === CORRECT_ADMIN_PASSWORD) {
                     showAdmin();
                     dateFilter.value = new Date().toISOString().split('T')[0];
                     monthFilter.value = new Date().toISOString().slice(0, 7);
                     loadReports(dateFilter.value);
-                    loadBankHours(monthFilter.value);
                 } else {
                     loginMessage.textContent = 'Senha incorreta. Tente novamente.';
                     loginMessage.classList.remove('hidden');
@@ -676,26 +944,88 @@
                     bankReportContainer.innerHTML += '<p class="text-center text-gray-500 text-lg">Nenhum dado de banco de horas encontrado para este mês.</p>';
                 }
             }
-    
-            function toggleBankHoursSection() {
-                bankContainer.classList.toggle('hidden');
-                bankReportContainer.classList.toggle('hidden');
-                if (!bankContainer.classList.contains('hidden')) {
-                    toggleBankButton.textContent = 'Ocultar Banco de Horas';
-                    const downloadButtonHTML = `<button id="downloadBankHoursButton" class="btn accent w-full mt-4">
-                                                    Salvar/Baixar Resultado do Mês
-                                                </button>`;
-                    bankReportContainer.innerHTML += downloadButtonHTML;
-                    loadBankHours(monthFilter.value);
-                    document.getElementById('downloadBankHoursButton').addEventListener('click', exportBankHoursToCSV);
-                } else {
-                    toggleBankButton.textContent = 'Ver Banco de Horas';
+            
+            function loadUserAccounts() {
+                userAccountsContainer.innerHTML = '';
+                const users = JSON.parse(localStorage.getItem('users')) || {};
+                let hasAccounts = false;
+                
+                for (const username in users) {
+                    if (users.hasOwnProperty(username)) {
+                        const accountData = users[username];
+                        const accountCard = document.createElement('div');
+                        accountCard.className = 'card p-6 rounded-xl shadow-inner';
+                        accountCard.innerHTML = `
+                            <p class="text-lg text-gray-700"><strong>Usuário:</strong> ${username}</p>
+                            <p class="text-lg text-gray-700 mt-2"><strong>Senha:</strong> ${accountData.password}</p>
+                        `;
+                        userAccountsContainer.appendChild(accountCard);
+                        hasAccounts = true;
+                    }
+                }
+                
+                const closeButton = document.createElement('button');
+                closeButton.id = 'closeUserAccountsButton';
+                closeButton.className = 'btn secondary w-full mt-4';
+                closeButton.textContent = 'Fechar';
+                userAccountsContainer.appendChild(closeButton);
+                
+                closeButton.addEventListener('click', closeUserAccountsSection);
+
+                if (!hasAccounts) {
+                    userAccountsContainer.innerHTML = '<p class="text-center text-gray-500 text-lg">Nenhuma conta de usuário encontrada no local storage.</p>';
                 }
             }
+
+            function closeUserAccountsSection() {
+                userAccountsContainer.classList.add('hidden');
+                showUserAccountsButton.textContent = 'Ver Contas de Usuários';
+            }
     
-            function exportToCSV() {
-                const allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
+            function toggleBankHoursSection() {
+                isBankReportVisible = !isBankReportVisible;
+                bankReportContainer.classList.toggle('hidden');
+                reportContainer.classList.toggle('hidden');
+                dateFilter.classList.toggle('hidden');
+                monthFilter.classList.toggle('hidden');
+                reportDate.classList.toggle('hidden');
+                userAccountsContainer.classList.add('hidden');
+                showUserAccountsButton.textContent = 'Ver Contas de Usuários';
+
+                if (isBankReportVisible) {
+                    toggleBankButton.textContent = 'Ver Relatório Diário';
+                    filterButton.textContent = 'Filtrar Mês';
+                    loadBankHours(monthFilter.value);
+                } else {
+                    toggleBankButton.textContent = 'Ver Banco de Horas';
+                    filterButton.textContent = 'Filtrar Dia';
+                    loadReports(dateFilter.value);
+                }
+            }
+
+            function toggleUserAccountsSection() {
+                userAccountsContainer.classList.toggle('hidden');
+                bankReportContainer.classList.add('hidden');
+                reportContainer.classList.add('hidden');
+                dateFilter.classList.add('hidden');
+                monthFilter.classList.add('hidden');
+                reportDate.classList.add('hidden');
+                
+                if (!userAccountsContainer.classList.contains('hidden')) {
+                    showUserAccountsButton.textContent = 'Ocultar Contas de Usuários';
+                    loadUserAccounts();
+                } else {
+                    showUserAccountsButton.textContent = 'Ver Contas de Usuários';
+                    dateFilter.classList.remove('hidden');
+                    reportContainer.classList.remove('hidden');
+                    reportDate.classList.remove('hidden');
+                    loadReports(dateFilter.value);
+                }
+            }
+            
+            function exportDailyToCSV() {
                 const dateString = dateFilter.value;
+                const allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
                 let csvContent = "data:text/csv;charset=utf-8,";
                 csvContent += "Nome do Funcionário,Data,Início Expediente,Início Almoço,Fim Almoço,Início Lanche,Fim Lanche,Fim Expediente,Duração Almoço,Duração Lanche,Total Trabalhado\n";
                 for (const employee in allEmployeesData) {
@@ -717,20 +1047,14 @@
                         csvContent += row + "\n";
                     }
                 }
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", `ponto_relatorio_${dateString}.csv`);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                downloadCSV(csvContent, `ponto_diario_${dateString}.csv`);
             }
-    
-            function exportBankHoursToCSV() {
+
+            function exportBankToCSV() {
                 const monthString = monthFilter.value;
                 const allEmployeesData = JSON.parse(localStorage.getItem('allEmployeeData')) || {};
                 const employeeTotals = {};
-    
+
                 for (const employee in allEmployeesData) {
                     employeeTotals[employee] = 0;
                     for (const date in allEmployeesData[employee]) {
@@ -740,33 +1064,65 @@
                         }
                     }
                 }
-    
+                
                 let csvContent = "data:text/csv;charset=utf-8,";
-                csvContent += "Nome do Funcionário,Total de Horas Trabalhadas (mês)\n";
-    
+                csvContent += "Funcionário,Total de Horas Trabalhadas\n";
                 for (const employee in employeeTotals) {
-                    if (employeeTotals[employee] > 0) {
-                        const totalHours = formatTotalHours(employeeTotals[employee]);
-                        const row = `"${employee}",${totalHours}`;
-                        csvContent += row + "\n";
-                    }
+                    const row = [
+                        `"${employee}"`,
+                        `"${formatTotalHours(employeeTotals[employee])}"`
+                    ].join(',');
+                    csvContent += row + "\n";
                 }
-    
+                downloadCSV(csvContent, `banco_de_horas_${monthString}.csv`);
+            }
+            
+            function downloadCSV(csvContent, filename) {
                 const encodedUri = encodeURI(csvContent);
                 const link = document.createElement("a");
                 link.setAttribute("href", encodedUri);
-                link.setAttribute("download", `banco_de_horas_${monthString}.csv`);
+                link.setAttribute("download", filename);
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
             }
+
+            function setupProfilePicture() {
+                profilePictureInput.click();
+            }
+
+            profilePictureInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imageDataUrl = e.target.result;
+                        const users = JSON.parse(localStorage.getItem('users')) || {};
+                        users[employeeName].profilePicture = imageDataUrl;
+                        localStorage.setItem('users', JSON.stringify(users));
+                        updateUI();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
     
             // Event Listeners
-            lunchStartButton.addEventListener('click', startLunch);
-            lunchEndButton.addEventListener('click', endLunch);
-            snackStartButton.addEventListener('click', startSnack);
-            snackEndButton.addEventListener('click', endSnack);
-            endButton.addEventListener('click', endWork);
+            lunchStartButton.addEventListener('click', () => showPasswordModal('Iniciar Almoço', startLunch));
+            lunchEndButton.addEventListener('click', () => showPasswordModal('Fim Almoço', endLunch));
+            snackStartButton.addEventListener('click', () => showPasswordModal('Iniciar Lanche', startSnack));
+            snackEndButton.addEventListener('click', () => showPasswordModal('Fim Lanche', endSnack));
+            endButton.addEventListener('click', showFinalizeCodeModal);
+            changeProfilePicButton.addEventListener('click', setupProfilePicture);
+            
+            // Listeners de Modais
+            passwordModalConfirmButton.addEventListener('click', handlePasswordModalConfirm);
+            passwordModalCancelButton.addEventListener('click', hidePasswordModal);
+            passwordModalInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { handlePasswordModalConfirm(); } });
+
+            finalizeCodeConfirmButton.addEventListener('click', handleFinalizeCodeConfirm);
+            finalizeCodeCancelButton.addEventListener('click', hideFinalizeCodeModal);
+            finalizeCodeInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { handleFinalizeCodeConfirm(); } });
+
             closeNotificationButton.addEventListener('click', hideNotification);
             notificationOkButton.addEventListener('click', hideNotification);
             window.addEventListener('click', (event) => { if (event.target == notificationModal) { hideNotification(); } });
@@ -776,6 +1132,8 @@
             showCreateLink.addEventListener('click', showCreateAccount);
             createAccountButton.addEventListener('click', createAccount);
             accessAccountButton.addEventListener('click', accessAccount);
+            verifyButton.addEventListener('click', verifyAccount);
+            resendCodeButton.addEventListener('click', generateAndShowVerificationCode);
             logoutUserButton.addEventListener('click', logoutUser);
 
             // Eventos do Admin
@@ -791,10 +1149,39 @@
             loginButton.addEventListener('click', handleLogin);
             passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { handleLogin(); } });
             logoutButton.addEventListener('click', () => showPonto());
-            filterButton.addEventListener('click', () => loadReports(dateFilter.value));
-            monthFilter.addEventListener('change', () => loadBankHours(monthFilter.value));
-            exportButton.addEventListener('click', exportToCSV);
+            
+            filterButton.addEventListener('click', () => {
+                if (isBankReportVisible) {
+                    loadBankHours(monthFilter.value);
+                } else {
+                    loadReports(dateFilter.value);
+                }
+            });
+
+            exportButton.addEventListener('click', () => {
+                if (isBankReportVisible) {
+                    exportBankToCSV();
+                } else {
+                    exportDailyToCSV();
+                }
+            });
+
             toggleBankButton.addEventListener('click', toggleBankHoursSection);
+            showUserAccountsButton.addEventListener('click', toggleUserAccountsSection);
+
+            // Lógica de Inicialização da Aplicação
+            document.addEventListener('DOMContentLoaded', () => {
+                updateRelogio();
+                setInterval(updateRelogio, 1000);
+
+                welcomeSection.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    welcomeSection.classList.add('hidden');
+                    checkUserSession();
+                }, 4000);
+            });
+
         })();
     </script>
 </body>
